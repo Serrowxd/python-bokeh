@@ -15,14 +15,16 @@ N = len(graph_data.vertexes)
 node_indices = list(range(N))
 
 color_list = []
-for vertx in graph_data.vertexes:
+for vertex in graph_data.vertexes:
     color_list.append(vertex.color)
 
 # debug_pallete = Spectral8
 # debug_pallete.append('#ff0000')
 # debug_pallete.append('#0000ff')
 
-plot = figure(title='Graph Layout Demonstration', x_range=(-1.1, 1.1), y_range=(-1.1, 1.1),
+# plot = figure(title='Graph Layout Demonstration', x_range=(-1.1, 1.1), y_range=(-1.1, 1.1),
+#               tools='', toolbar_location=None)
+plot = figure(title='Graph Layout Demonstration', x_range=(0, 500), y_range=(0, 500),
               tools='', toolbar_location=None)
 
 graph = GraphRenderer()
@@ -33,9 +35,19 @@ graph.node_renderer.data_source.add(node_indices, 'index')
 graph.node_renderer.data_source.add(color_list, 'color')
 graph.node_renderer.glyph = Oval(height=0.1, width=0.2, fill_color='color')
 
+# This is drawing the edges from start to end
+
+start_indexes = []
+end_indexes = []
+
+for start_index, vertex in enumerate(graph_data.vertexes):
+    for e in vertex.edges:
+        start_indexes.append(start_index)
+        end_indexes.append(graph_data.vertexes.index(e.destination))
+
 graph.edge_renderer.data_source.data = dict(
-    start=[0]*N,
-    end=node_indices)
+    start=start_indexes,  # a list of vertex indexes to start from
+    end=end_indexes)  # a list of vertex indexes to end at
 
 # start of layout code
 # circ = [i*2*math.pi/8 for i in node_indices] ## writes them in a circle around 8
@@ -43,6 +55,8 @@ graph.edge_renderer.data_source.data = dict(
 # circ = [i*2*math.pi/N for i in node_indices]
 # x = [math.cos(i) for i in circ]
 # y = [math.sin(i) for i in circ]
+
+# sets position of vertexes
 
 x = [v.pos['x'] for v in graph_data.vertexes]
 y = [v.pos['y'] for v in graph_data.vertexes]
@@ -54,5 +68,3 @@ plot.renderers.append(graph)
 
 output_file('graph.html')
 show(plot)
-
-# NOT WORKING
